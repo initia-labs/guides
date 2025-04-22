@@ -1,0 +1,23 @@
+{
+  "name": "wrapping-tokens",
+  "version": "1.0.0",
+  "description": "A simple TypeScript project for token wrapping",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "create-wrapped-tokens": "ts-node src/create-wrapped-tokens.ts",
+    "fetch-wrapped-tokens": "ts-node src/fetch-wrapped-tokens.ts"
+  },
+  "dependencies": {
+    "@initia/initia.js": "^1.0.7",
+    "dotenv": "^16.5.0",
+    "ethers": "^6.13.5",
+    "sha3": "^2.1.4",
+    "typescript": "^5.3.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.19",
+    "ts-node": "^10.9.2"
+  }
+} 
