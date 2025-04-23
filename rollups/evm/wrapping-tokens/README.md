@@ -1,6 +1,8 @@
 # Wrapping Tokens
 
-A TypeScript project for creating and fetching wrapped EVM denoms from Initia L1 onto EVM rollups.
+This guide provides a simple command to create wrapped EVM denoms on your EVM rollup and also shows you how to fetch it. Note that this is a requirement for any bridged token to be used in your EVM rollup.
+
+If more tokens from L1 to be used in your rollup in the future, just append those L1 token denoms to the list and run the command again.
 
 ## Installation
 
