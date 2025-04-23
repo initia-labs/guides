@@ -1,8 +1,8 @@
 # Testnet default token list
 
-| Token | Denom |
-|-------|-------|
-| INIT  | uinit |
-| USDC  | uusdc |
-| TIA   | utia  |
-| ETH   | ueth  | 
+| Token | Denom on L1 |
+|:------|:------------|
+| INIT  | uinit       |
+| USDC  | uusdc       |
+| TIA   | utia        |
+| ETH   | ueth        | 

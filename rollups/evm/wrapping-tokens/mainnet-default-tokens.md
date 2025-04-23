@@ -1,7 +1,7 @@
 # Mainnet default token list
 
-| Token  | Denom |
-|--------|-------|
+| Token  | Denom on L1 |
+|:-------|:------------|
 | INIT   | uinit |
 | USDC   | ibc/6490A7EAB61059BFC1CDDEB05917DD70BDF3A611654162A1A47DB930D40D8AF4 |
 | MILKTIA| ibc/16065EE5282C5217685C8F084FC44864C25C706AC37356B0D62811D50B96920F |
