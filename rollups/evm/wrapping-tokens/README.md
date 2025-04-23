@@ -18,7 +18,7 @@ Copy `.env.testnet.example` or `.env.mainnet.example` to `.env` based on your ro
 - `L2_REST_ENDPOINT`: Your rollup chain REST endpoint
 - `L1_GAS_PRICES`: Gas prices for L1 transactions
 - `MNEMONIC`: The mnemonic of the account to send this transaction
-- `ASSET_LIST`: Comma-separated list of L1 denoms to wrap
+- `ASSET_LIST`: Comma-separated list of L1 denoms to wrap. See [Mainnet default tokens](./mainnet-default-tokens.md) or [Testnet default tokens](./testnet-default-tokens.md) for default L1 token denoms.
 
 ## Creating Wrapped Tokens
 
