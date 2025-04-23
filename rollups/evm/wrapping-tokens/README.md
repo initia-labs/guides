@@ -11,6 +11,7 @@ pnpm install
 ## Configuration
 
 Copy `.env.testnet.example` or `.env.mainnet.example` to `.env` based on your rollup network and configure the following variables:
+
 - `L1_REST_ENDPOINT`: L1 chain REST endpoint
 - `L2_REST_ENDPOINT`: Your rollup chain REST endpoint
 - `L1_GAS_PRICES`: Gas prices for L1 transactions
@@ -26,6 +27,7 @@ pnpm run create-wrapped-tokens
 ```
 
 This will:
+
 1. Generate hook messages for each L1 denom
 2. Create and sign deposit transactions
 3. Broadcast the transactions to initiate token deposits
@@ -40,12 +42,14 @@ pnpm run fetch-wrapped-tokens
 ```
 
 This will:
+
 1. Query the L2 chain for each L1 denom
 2. Retrieve the corresponding wrapped token contract addresses
 3. Display the mapping between L1 denoms and their L2 wrapped token addresses
 
 Example output:
-```
+
+```shell
 --------------------------------
 L1Denom: uinit
 L2Denom: evm/0x1234...
