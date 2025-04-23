@@ -1,3 +1,4 @@
+import { RESTClient, sha256 } from "@initia/initia.js";
 import { SHA3 } from "sha3";
 
 // generate L2 denom from l1 denom and bridge id
@@ -13,4 +14,28 @@ function L2Denom(bridgeId: bigint, l1Denom: string) {
   return `l2/${hash}`;
 }
 
-export { L2Denom };
+async function IBCDenom(
+  l1RestClient: RESTClient,
+  l1Denom: string,
+  channelId: string
+) {
+  let baseDenom = l1Denom;
+  let denomPath = `transfer/${channelId}`;
+
+  // if l1Denom is an ibc denom, get the denom trace from the rest client
+  if (l1Denom.startsWith("ibc/")) {
+    const hash = l1Denom.split("/")[1];
+    const res = await l1RestClient.apiRequester.get<{
+      denom_trace: { path: string; base_denom: string };
+    }>(`/ibc/apps/transfer/v1/denom_traces/${hash}`);
+    denomPath = res.denom_trace.path + `transfer/${channelId}`;
+    baseDenom = res.denom_trace.base_denom;
+  }
+
+  // hash the full denom path and base denom
+  const fullDenomPath = `${denomPath}/${baseDenom}`;
+  const hash = sha256(Buffer.from(fullDenomPath, "utf-8"));
+  return `ibc/${Buffer.from(hash).toString("hex").toUpperCase()}`;
+}
+
+export { L2Denom, IBCDenom };

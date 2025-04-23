@@ -1,5 +1,5 @@
-import { l2RestEndpoint, assetList } from "./env";
-import { L2Denom } from "./utils";
+import { l1RestEndpoint, l2RestEndpoint, assets, channelId } from "./env";
+import { IBCDenom, L2Denom } from "./utils";
 
 import { AccAddress, RESTClient } from "@initia/initia.js";
 import { AbiCoder } from "ethers";
@@ -13,22 +13,18 @@ async function contractAddress(
 }
 
 async function getWrappedTokenAddress(
-  restClient: RESTClient,
-  bridgeId: bigint,
-  l1Denom: string
+  l2RestClient: RESTClient,
+  l2Denom: string
 ): Promise<string> {
-  const l2Denom = L2Denom(bridgeId, l1Denom);
-  const contractAddr = await contractAddress(restClient, l2Denom);
+  const contractAddr = await contractAddress(l2RestClient, l2Denom);
 
   const abiCoder = new AbiCoder();
   const encoded = abiCoder.encode(["address", "uint8"], [contractAddr, 6]);
 
   const input = `0x1efb51e6${encoded.slice(2)}`;
-  const res = await restClient.evm.call(
+  const res = await l2RestClient.evm.call(
     AccAddress.fromHex(contractAddr),
-    // TODO: at this step, we don't have rest endpoint for l2, so use pre-computed contract address.
-    // It can be changed if we have updated the contract implementation.
-    "0x4eb08D5c1B0A821303A86C7b3AC805c2793dE783",
+    await l2RestClient.evm.erc20Wrapper(),
     input,
     false
   );
@@ -41,17 +37,30 @@ async function getWrappedTokenAddress(
 }
 
 async function main() {
-  for (const asset of assetList) {
-    const restClient = new RESTClient(l2RestEndpoint, { gasPrices: {} });
-    const bridgeInfo = await restClient.opchild.bridgeInfo();
-    const denom = await getWrappedTokenAddress(
-      restClient,
-      BigInt(bridgeInfo.bridge_id),
-      asset
-    );
+  const l1RestClient = new RESTClient(l1RestEndpoint, { gasPrices: {} });
+  const l2RestClient = new RESTClient(l2RestEndpoint, { gasPrices: {} });
+
+  const bridgeInfo = await l2RestClient.opchild.bridgeInfo();
+  const bridgeId = BigInt(bridgeInfo.bridge_id);
+
+  for (const asset of assets) {
+    const l1Denom = asset.denom;
+    const bridgeType = asset.bridgeType;
+
+    let l2Denom = ''
+    if (bridgeType === "ibc") {
+      l2Denom = await IBCDenom(l1RestClient, l1Denom, channelId);
+    } else if (bridgeType === "op") {
+      l2Denom = L2Denom(bridgeId, l1Denom);
+    } else {
+      throw new Error(`Unsupported bridge type: ${bridgeType}`);
+    }
+
+    const denom = await getWrappedTokenAddress(l2RestClient, l2Denom);
 
     console.info("--------------------------------");
-    console.info(`L1Denom: ${asset}\nL2Denom: evm/${denom}`);
+    console.info(`L1Denom: ${l1Denom}, L2Denom: ${l2Denom}`);
+    console.info(`Wrapped Token Address: evm/${denom}`);
   }
   console.info("--------------------------------");
 }
