@@ -28,7 +28,7 @@ async function IBCDenom(
     const res = await l1RestClient.apiRequester.get<{
       denom_trace: { path: string; base_denom: string };
     }>(`/ibc/apps/transfer/v1/denom_traces/${hash}`);
-    denomPath = res.denom_trace.path + `transfer/${channelId}`;
+    denomPath = `transfer/${channelId}/` + res.denom_trace.path;
     baseDenom = res.denom_trace.base_denom;
   }
 

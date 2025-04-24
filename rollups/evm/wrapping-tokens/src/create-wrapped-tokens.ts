@@ -75,12 +75,12 @@ async function initiateTokenDepositTx(
 ): Promise<string> {
   const l1Key = new MnemonicKey({
     mnemonic: mnemonic,
-    eth: coinType == 60 ? true : false,
+    eth: coinType === 60,
     coinType,
   });
   const l2Key = new MnemonicKey({
     mnemonic: mnemonic,
-    eth: coinType == 60 ? true : false,
+    eth: coinType === 60,
     coinType,
   });
 
