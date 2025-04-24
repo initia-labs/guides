@@ -2,7 +2,7 @@ import { l1RestEndpoint, l2RestEndpoint, assets, channelId } from "./env";
 import { IBCDenom, L2Denom } from "./utils";
 
 import { AccAddress, RESTClient } from "@initia/initia.js";
-import { AbiCoder } from "ethers";
+import { AbiCoder, getAddress } from "ethers";
 
 async function contractAddress(
   restClient: RESTClient,
@@ -57,10 +57,9 @@ async function main() {
     }
 
     const denom = await getWrappedTokenAddress(l2RestClient, l2Denom);
-
     console.info("--------------------------------");
     console.info(`L1Denom: ${l1Denom}, L2Denom: ${l2Denom}`);
-    console.info(`Wrapped Token Address: evm/${denom}`);
+    console.info(`Wrapped Token Address: evm/${getAddress(denom).slice(2)}`);
   }
   console.info("--------------------------------");
 }
