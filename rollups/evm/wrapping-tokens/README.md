@@ -20,6 +20,8 @@ Copy `.env.testnet.example` or `.env.mainnet.example` to `.env` based on your ro
 - `MNEMONIC`: The mnemonic of the account to send this transaction
 - `ASSET_LIST`: Comma-separated list of L1 denoms to wrap. See [Mainnet default tokens](./mainnet-default-tokens.md) or [Testnet default tokens](./testnet-default-tokens.md) for default L1 token denoms.
 
+> **Important**: Please ensure that your account has sufficient INIT tokens to cover gas fees before proceeding.
+
 ## Creating Wrapped Tokens
 
 To create wrapped denoms on L2 once you have `.env` ready:
