@@ -38,4 +38,13 @@ async function IBCDenom(
   return `ibc/${Buffer.from(hash).toString("hex").toUpperCase()}`;
 }
 
-export { L2Denom, IBCDenom };
+async function getChannelId(l2RestClient: RESTClient): Promise<string> {
+  const [channels, _] = await l2RestClient.ibc.channels();
+  const channel = channels.find((c) => c.port_id === "transfer" && c.state.toString() === "STATE_OPEN");
+  if (!channel) {
+    throw new Error("Channel not found");
+  }
+  return channel.channel_id;
+}
+
+export { L2Denom, IBCDenom, getChannelId };
