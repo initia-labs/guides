@@ -8,7 +8,6 @@ const l1RestEndpoint = process.env.L1_REST_ENDPOINT || "";
 const l2RestEndpoint = process.env.L2_REST_ENDPOINT || "";
 const l1GasPrices = process.env.L1_GAS_PRICES || "";
 const coinType = parseInt(process.env.COIN_TYPE || "60");
-const channelId = process.env.CHANNEL_ID || "channel-0";
 
 if (!assetList) {
   console.log("ASSET_LIST is not set");
@@ -22,8 +21,6 @@ if (!assetList) {
   console.log("L1_GAS_PRICES is not set");
 } else if (coinType !== 118 && coinType !== 60) {
   console.log("COIN_TYPE must be 118 or 60");
-} else if (!/channel-\d+/.test(channelId)) {
-  console.log("CHANNEL_ID must be in the format of channel-<number>");
 }
 
 const assets: { denom: string, bridgeType: string }[] = [];
@@ -39,5 +36,4 @@ export {
   l2RestEndpoint,
   l1GasPrices,
   coinType,
-  channelId,
 };

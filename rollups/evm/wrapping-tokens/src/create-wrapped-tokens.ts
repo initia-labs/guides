@@ -5,9 +5,8 @@ import {
   l1RestEndpoint,
   l2RestEndpoint,
   mnemonic,
-  channelId,
 } from "./env";
-import { L2Denom, IBCDenom } from "./utils";
+import { L2Denom, IBCDenom, getChannelId } from "./utils";
 
 import {
   MsgInitiateTokenDeposit,
@@ -155,6 +154,7 @@ async function initiateTokenDepositTx(
     }
   }
 
+  const channelId = await getChannelId(l2RestClient);
   // at this step, we don't have rest endpoint for l2, so use 0 sequence
   let sequence = await l2Wallet.sequence();
   for (const asset of assets) {

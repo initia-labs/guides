@@ -1,5 +1,5 @@
-import { l1RestEndpoint, l2RestEndpoint, assets, channelId } from "./env";
-import { IBCDenom, L2Denom } from "./utils";
+import { l1RestEndpoint, l2RestEndpoint, assets } from "./env";
+import { getChannelId, IBCDenom, L2Denom } from "./utils";
 
 import { AccAddress, RESTClient } from "@initia/initia.js";
 import { AbiCoder, getAddress } from "ethers";
@@ -42,6 +42,7 @@ async function main() {
 
   const bridgeInfo = await l2RestClient.opchild.bridgeInfo();
   const bridgeId = BigInt(bridgeInfo.bridge_id);
+  const channelId = await getChannelId(l2RestClient);
 
   for (const asset of assets) {
     const l1Denom = asset.denom;

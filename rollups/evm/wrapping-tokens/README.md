@@ -14,13 +14,18 @@ pnpm install
 
 Copy `.env.testnet.example` or `.env.mainnet.example` to `.env` based on your rollup network and configure the following variables:
 
+- `ASSET_LIST`: Comma-separated list of L1 denoms to wrap. See [Mainnet default tokens](./mainnet-default-tokens.md) or [Testnet default tokens](./testnet-default-tokens.md) for default L1 token denoms.
 - `L1_REST_ENDPOINT`: L1 chain REST endpoint
 - `L2_REST_ENDPOINT`: Your rollup chain REST endpoint
 - `L1_GAS_PRICES`: Gas prices for L1 transactions
 - `MNEMONIC`: The mnemonic of the account to send this transaction
-- `ASSET_LIST`: Comma-separated list of L1 denoms to wrap. See [Mainnet default tokens](./mainnet-default-tokens.md) or [Testnet default tokens](./testnet-default-tokens.md) for default L1 token denoms.
+- `COIN_TYPE`: coin type for account derivation path (BIP-44). Should be 60 for mainnet and 118 for testnet
 
-> **Important**: Please ensure that your account has sufficient INIT tokens to cover gas fees before proceeding.
+**Before proceeding, ensure your account meets the following requirements:**
+
+- Has sufficient INIT tokens on L1 to cover transaction gas fees
+- Maintains a positive balance for all IBC tokens (ibc/...) listed in `ASSET_LIST` on L1 (zero balance is acceptable for OP tokens with l2/... prefix)
+- Is properly registered on your rollup (either as a system account, included in genesis accounts, or has previously received assets)
 
 ## Creating Wrapped Tokens
 
