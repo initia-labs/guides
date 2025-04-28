@@ -19,7 +19,7 @@ Copy `.env.testnet.example` or `.env.mainnet.example` to `.env` based on your ro
 - `L2_REST_ENDPOINT`: Your rollup chain REST endpoint
 - `L1_GAS_PRICES`: Gas prices for L1 transactions
 - `MNEMONIC`: The mnemonic of the account to send this transaction
-- `COIN_TYPE`: coin type for account derivation path (BIP-44). Should be 60 for mainnet and 118 for testnet
+- `COIN_TYPE`: coin type for account derivation path (BIP-44). Default as 60
 
 **Before proceeding, ensure your account meets the following requirements:**
 
