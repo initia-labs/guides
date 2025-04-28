@@ -21,6 +21,7 @@ import {
   MsgTransfer,
 } from "@initia/initia.js";
 import { AbiCoder } from "ethers";
+import axios from "axios";
 
 async function generateOPBridgeHookMessage(
   l2Wallet: Wallet,
@@ -65,6 +66,54 @@ async function generateIBCMemo(
   return `{"evm":{"message":{"contract_addr":"${wrapperAddr}","input":"${input}"}}}`;
 }
 
+async function createAccount(
+  l1Wallet: Wallet,
+  l2Wallet: Wallet,
+  bridgeId: bigint
+) {
+  const tx = await l1Wallet.createAndSignTx({
+    msgs: [
+      new MsgInitiateTokenDeposit(
+        l1Wallet.key.accAddress,
+        Number(bridgeId),
+        l2Wallet.key.accAddress,
+        new Coin(`uinit`, 0)
+      ),
+    ],
+  });
+  const res = await l1Wallet.rest.tx.broadcast(tx);
+  if (isTxError(res)) {
+    throw new Error(`Failed to broadcast tx: ${res.raw_log}`);
+  }
+
+  console.info(
+    `Successfully submitted transaction ${res.txhash} to create L2 account for address ${l2Wallet.key.accAddress}`
+  );
+
+  console.info("Waiting for l2 account to be created...");
+
+  // wait for l2 account to be created
+  while (true) {
+    try {
+      const acc = await l2Wallet.rest.auth.accountInfo(l2Wallet.key.accAddress);
+      console.info(
+        `L2 account for ${
+          l2Wallet.key.accAddress
+        } created with account number ${acc.getAccountNumber()}`
+      );
+
+      break;
+    } catch (e) {
+      if (e instanceof axios.AxiosError && e.response?.status === 404) {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        continue;
+      } else {
+        throw e;
+      }
+    }
+  }
+}
+
 async function initiateTokenDepositTx(
   l1RestEndpoint: string,
   l2RestEndpoint: string,
@@ -95,6 +144,17 @@ async function initiateTokenDepositTx(
   const wrapperAddr = await l2Wallet.rest.evm.erc20Wrapper();
   const messages = [];
 
+  // check l2 account existence
+  try {
+    await l2RestClient.auth.accountInfo(l2Key.accAddress);
+  } catch (e) {
+    if (e instanceof axios.AxiosError && e.response?.status === 404) {
+      await createAccount(l1Wallet, l2Wallet, bridgeId);
+    } else {
+      throw e;
+    }
+  }
+
   // at this step, we don't have rest endpoint for l2, so use 0 sequence
   let sequence = await l2Wallet.sequence();
   for (const asset of assets) {
@@ -118,11 +178,7 @@ async function initiateTokenDepositTx(
           wrapperAddr,
           undefined,
           ((new Date().getTime() / 1000 + 1000) * 1_000_000_000).toFixed(),
-          await generateIBCMemo(
-            l2Wallet,
-            l2Denom,
-            wrapperAddr
-          )
+          await generateIBCMemo(l2Wallet, l2Denom, wrapperAddr)
         )
       );
     } else if (bridgeType === "op") {
