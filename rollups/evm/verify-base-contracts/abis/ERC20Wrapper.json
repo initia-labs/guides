@@ -1,0 +1,467 @@
+[
+  {
+    "type": "constructor",
+    "inputs": [
+      {
+        "name": "erc20Factory",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "factory",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "contract ERC20Factory"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "ibc_ack",
+    "inputs": [
+      {
+        "name": "callback_id",
+        "type": "uint64",
+        "internalType": "uint64"
+      },
+      {
+        "name": "success",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "ibc_timeout",
+    "inputs": [
+      {
+        "name": "callback_id",
+        "type": "uint64",
+        "internalType": "uint64"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "localTokens",
+    "inputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "",
+        "type": "uint8",
+        "internalType": "uint8"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "owner",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "remoteDecimals",
+    "inputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint8",
+        "internalType": "uint8"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "remoteTokens",
+    "inputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "setFactory",
+    "inputs": [
+      {
+        "name": "newFactory",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "supportsInterface",
+    "inputs": [
+      {
+        "name": "interfaceId",
+        "type": "bytes4",
+        "internalType": "bytes4"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "toLocal",
+    "inputs": [
+      {
+        "name": "receiver",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "remoteDenom",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "remoteAmount",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_remoteDecimals",
+        "type": "uint8",
+        "internalType": "uint8"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "toLocal",
+    "inputs": [
+      {
+        "name": "receiver",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "remoteDenom",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "_remoteDecimals",
+        "type": "uint8",
+        "internalType": "uint8"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "toRemote",
+    "inputs": [
+      {
+        "name": "receiver",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "localDenom",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "localAmount",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "remoteToken",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "remoteAmount",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_remoteDecimals",
+        "type": "uint8",
+        "internalType": "uint8"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "toRemoteAndIBCTransfer",
+    "inputs": [
+      {
+        "name": "localDenom",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "localAmount",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "channel",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "receiver",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "timeout",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "memo",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "gasLimit",
+        "type": "uint64",
+        "internalType": "uint64"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "toRemoteAndIBCTransfer",
+    "inputs": [
+      {
+        "name": "localDenom",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "localAmount",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "channel",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "receiver",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "timeout",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "toRemoteAndIBCTransfer",
+    "inputs": [
+      {
+        "name": "localDenom",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "localAmount",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "channel",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "receiver",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "timeout",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "memo",
+        "type": "string",
+        "internalType": "string"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "toRemoteAndOPWithdraw",
+    "inputs": [
+      {
+        "name": "receiver",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "localDenom",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "localAmount",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "gasLimit",
+        "type": "uint64",
+        "internalType": "uint64"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "toRemoteAndOPWithdraw",
+    "inputs": [
+      {
+        "name": "receiver",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "localDenom",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "localAmount",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "transferOwnership",
+    "inputs": [
+      {
+        "name": "newOwner",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "event",
+    "name": "OwnershipTransferred",
+    "inputs": [
+      {
+        "name": "previousOwner",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "newOwner",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "error",
+    "name": "StringsInsufficientHexLength",
+    "inputs": [
+      {
+        "name": "value",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "length",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  }
+]
