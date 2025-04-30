@@ -11,6 +11,7 @@ const WRAPPER_CONTRACT_ADDRESS = '0x4eb08D5c1B0A821303A86C7b3AC805c2793dE783';
 const WRAPPED_NAME_PREFIX = 'Wrapped';
 const WRAPPED_SYMBOL_PREFIX = 'W';
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+const CHAIN_ADDRESS = '0x0000000000000000000000000000000000000001';
 
 async function main() {
   foundryTomlMustExist();
@@ -57,8 +58,9 @@ async function main() {
     // Encode constructor arguments using ethers.js
     const iface = new ethers.Interface(ERC20_ABI);
     const decimals = await tokenContract.decimals();
-    const constructorArgs = iface.encodeDeploy([name, symbol, decimals, false]).slice(2);
-    
+    const owner = await tokenContract.owner();
+    const constructorArgs = iface.encodeDeploy([name, symbol, decimals, owner.toLowerCase() !== CHAIN_ADDRESS]).slice(2);
+
     const verifyArgs = [
       'verify-contract',
       '--rpc-url', jsonRpcEndpoint,
