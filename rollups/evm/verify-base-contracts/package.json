@@ -4,8 +4,7 @@
   "description": "A simple TypeScript project for verifying base contracts",
   "scripts": {
     "build": "tsc",
-    "verify-erc20": "ts-node src/erc20.ts",
-    "verify-wrapped-erc20": "ts-node src/wrapped-erc20.ts"
+    "erc20": "ts-node src/erc20.ts"
   },
   "dependencies": {
     "@initia/initia.js": "^1.0.7",

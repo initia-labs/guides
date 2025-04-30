@@ -12,8 +12,8 @@ echo "Using MINIEVM_VERSION: $MINIEVM_VERSION from $RPC_ENDPOINT"
 # checkout the specific version of minievm or use main if checkout fails
 cd minievm
 if ! git checkout $MINIEVM_VERSION 2>/dev/null; then
-    echo "Failed to checkout $MINIEVM_VERSION, falling back to v1.0.2 branch"
-    git checkout v1.0.2
+    echo "Failed to checkout $MINIEVM_VERSION, falling back to main branch"
+    git checkout main
 fi
 cd ..
 
@@ -31,6 +31,7 @@ optimize = false
 build_info = true
 allow_paths = ["contracts"]
 extra_output = ["abi", "evm.bytecode"]
+bytecode_hash = "none"
 EOF
 
 # create abis directory if it doesn't exist
@@ -51,6 +52,5 @@ jq '.abi' out/ERC20Factory.sol/ERC20Factory.json > abis/ERC20Factory.json
 
 # remove minievm
 rm -rf minievm
-
 
 echo "Setup complete."
