@@ -1,5 +1,15 @@
 #!/bin/bash
 
+# Source .env file, exit with error if it doesn't exist
+if [ ! -f .env ]; then
+    echo "Error: .env file not found"
+    exit 1
+fi
+
+set -a
+source .env
+set +a
+
 rm -rf minievm contracts foundry.toml
 
 # download contracts from https://github.com/initia-labs/minievm

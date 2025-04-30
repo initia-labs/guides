@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "A simple TypeScript project for verifying base contracts",
   "scripts": {
-    "build": "tsc",
     "erc20": "ts-node src/erc20.ts"
   },
   "dependencies": {

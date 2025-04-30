@@ -4,4 +4,6 @@ dist
 out/
 cache/
 contracts/
+abis/
 foundry.toml
+minievm/
