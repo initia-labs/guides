@@ -50,9 +50,3 @@ This will:
 1. Query the contract to get its details
 2. Generate the verification command with the correct constructor arguments
 3. Submit the verification request
-
-## Notes
-
-- The verification process supports both regular ERC20 tokens and wrapped tokens
-- For wrapped tokens, the script automatically prepends "Wrapped" to the name and "W" to the symbol
-- The verification uses the custom verifier at `https://verification-staging.alleslabs.dev`
