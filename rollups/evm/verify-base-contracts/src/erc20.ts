@@ -56,7 +56,8 @@ async function main() {
     
     // Encode constructor arguments using ethers.js
     const iface = new ethers.Interface(ERC20_ABI);
-    const constructorArgs = iface.encodeDeploy([name, symbol, 18, false]).slice(2);
+    const decimals = await tokenContract.decimals();
+    const constructorArgs = iface.encodeDeploy([name, symbol, decimals, false]).slice(2);
     
     const verifyArgs = [
       'verify-contract',
