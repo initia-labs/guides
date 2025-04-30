@@ -1,3 +1,9 @@
 node_modules
 dist
 .env
+out/
+cache/
+contracts/
+abis/
+foundry.toml
+minievm/

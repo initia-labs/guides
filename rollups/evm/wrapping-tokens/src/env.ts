@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 
-dotenv.config();
+dotenv.config({ override: true });
 
 const assetList = process.env.ASSET_LIST?.split(",") || [];
 const mnemonic = process.env.MNEMONIC || "";
