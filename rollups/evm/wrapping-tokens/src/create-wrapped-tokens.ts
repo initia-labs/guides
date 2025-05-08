@@ -30,16 +30,22 @@ async function generateOPBridgeHookMessage(
   wrapperAddr: string
 ): Promise<string> {
   const erc20WrapperContractAddr = await l2Wallet.rest.evm.erc20Wrapper()
-  const tokenAddr = await l2Wallet.rest.evm.contractAddrByDenom(l2Denom)
-
-  const msgs = [
-    new MsgCall(
-      l2Wallet.key.accAddress,
-      tokenAddr,
-      erc20Intf.encodeFunctionData('approve', [erc20WrapperContractAddr, ethers.MaxInt256]),
-      '0',
-      []
-    ),
+  const msgs = []
+  
+  if (amount != 0) {
+    const tokenAddr = (await l2Wallet.rest.evm.contractAddrByDenom(l2Denom))
+    msgs.push(
+      new MsgCall(
+        l2Wallet.key.accAddress,
+        tokenAddr,
+        erc20Intf.encodeFunctionData('approve', [erc20WrapperContractAddr, ethers.MaxInt256]),
+        '0',
+        []
+      )
+    )
+  }
+  
+  msgs.push( 
     new MsgCall(
       l2Wallet.key.accAddress,
       wrapperAddr,
@@ -52,7 +58,7 @@ async function generateOPBridgeHookMessage(
       '0',
       []
     )
-  ];
+  )
   
   const tx = await l2Wallet.createAndSignTx({
     msgs: msgs,
@@ -201,7 +207,7 @@ async function initiateTokenDepositTx(
           l1Key.accAddress,
           Number(bridgeId),
           l2Key.accAddress,
-          new Coin(l1Denom, amount != 0 ? amount : 1),
+          new Coin(l1Denom, amount),
           await generateOPBridgeHookMessage(
             l2Wallet,
             l2Denom,
