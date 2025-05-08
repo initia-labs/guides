@@ -191,7 +191,7 @@ async function initiateTokenDepositTx(
         new MsgTransfer(
           "transfer",
           res.channel.counterparty.channel_id,
-          new Coin(l1Denom, 1),
+          new Coin(l1Denom, amount != 0 ? amount : 1),
           l1Key.accAddress,
           wrapperAddr,
           undefined,
