@@ -8,6 +8,7 @@ const l1RestEndpoint = process.env.L1_REST_ENDPOINT || "";
 const l2RestEndpoint = process.env.L2_REST_ENDPOINT || "";
 const l1GasPrices = process.env.L1_GAS_PRICES || "";
 const coinType = parseInt(process.env.COIN_TYPE || "60");
+const amount = parseInt(process.env.AMOUNT || "0");
 
 if (!assetList) {
   console.log("ASSET_LIST is not set");
@@ -21,6 +22,8 @@ if (!assetList) {
   console.log("L1_GAS_PRICES is not set");
 } else if (coinType !== 118 && coinType !== 60) {
   console.log("COIN_TYPE must be 118 or 60");
+} else if (amount < 0) {
+  console.log("AMOUNT must be greater than or equal to 0");
 }
 
 const assets: { denom: string, bridgeType: string }[] = [];
@@ -36,4 +39,5 @@ export {
   l2RestEndpoint,
   l1GasPrices,
   coinType,
+  amount,
 };
