@@ -1,4 +1,5 @@
 import {
+  amount,
   assets,
   coinType,
   l1GasPrices,
@@ -7,7 +8,6 @@ import {
   mnemonic,
 } from "./env";
 import { L2Denom, IBCDenom, getChannelId } from "./utils";
-
 import {
   MsgInitiateTokenDeposit,
   MsgCall,
@@ -19,8 +19,9 @@ import {
   isTxError,
   MsgTransfer,
 } from "@initia/initia.js";
-import { AbiCoder } from "ethers";
+import { ethers } from "ethers";
 import axios from "axios";
+import { erc20Intf, wrapIntf } from "./interface";
 
 async function generateOPBridgeHookMessage(
   l2Wallet: Wallet,
@@ -28,22 +29,39 @@ async function generateOPBridgeHookMessage(
   sequence: number,
   wrapperAddr: string
 ): Promise<string> {
-  const abiCoder = new AbiCoder();
-  const encoded = abiCoder.encode(
-    ["address", "string", "uint256", "uint8"],
-    [AccAddress.toHex(l2Wallet.key.accAddress), l2Denom, 0, 6]
-  );
-
-  const msg = new MsgCall(
-    l2Wallet.key.accAddress,
-    wrapperAddr,
-    `0x1efd1a84${encoded.slice(2)}`,
-    "0",
-    []
-  );
-
+  const erc20WrapperContractAddr = await l2Wallet.rest.evm.erc20Wrapper()
+  const msgs = []
+  
+  if (amount != 0) {
+    const tokenAddr = (await l2Wallet.rest.evm.contractAddrByDenom(l2Denom))
+    msgs.push(
+      new MsgCall(
+        l2Wallet.key.accAddress,
+        tokenAddr,
+        erc20Intf.encodeFunctionData('approve', [erc20WrapperContractAddr, ethers.MaxInt256]),
+        '0',
+        []
+      )
+    )
+  }
+  
+  msgs.push( 
+    new MsgCall(
+      l2Wallet.key.accAddress,
+      wrapperAddr,
+      wrapIntf.encodeFunctionData('toLocal(address,string,uint256,uint8)', [
+        AccAddress.toHex(l2Wallet.key.accAddress),
+        l2Denom,
+        amount,
+        6
+      ]),
+      '0',
+      []
+    )
+  )
+  
   const tx = await l2Wallet.createAndSignTx({
-    msgs: [msg],
+    msgs: msgs,
     gas: "1",
     sequence,
   });
@@ -54,14 +72,13 @@ async function generateIBCMemo(
   l2Wallet: Wallet,
   l2Denom: string,
   wrapperAddr: string
-): Promise<string> {
-  const abiCoder = new AbiCoder();
-  const encoded = abiCoder.encode(
-    ["address", "string", "uint256", "uint8"],
-    [AccAddress.toHex(l2Wallet.key.accAddress), l2Denom, 0, 6]
-  );
-
-  const input = `0x1efd1a84${encoded.slice(2)}`;
+): Promise<string> {  
+  const input = wrapIntf.encodeFunctionData('toLocal(address,string,uint256,uint8)', [
+    AccAddress.toHex(l2Wallet.key.accAddress),
+    l2Denom,
+    amount,
+    6
+  ])
   return `{"evm":{"message":{"contract_addr":"${wrapperAddr}","input":"${input}"}}}`;
 }
 
@@ -173,7 +190,7 @@ async function initiateTokenDepositTx(
         new MsgTransfer(
           "transfer",
           res.channel.counterparty.channel_id,
-          new Coin(l1Denom, 1),
+          new Coin(l1Denom, amount != 0 ? amount : 1),
           l1Key.accAddress,
           wrapperAddr,
           undefined,
@@ -190,7 +207,7 @@ async function initiateTokenDepositTx(
           l1Key.accAddress,
           Number(bridgeId),
           l2Key.accAddress,
-          new Coin(l1Denom, 0),
+          new Coin(l1Denom, amount),
           await generateOPBridgeHookMessage(
             l2Wallet,
             l2Denom,
