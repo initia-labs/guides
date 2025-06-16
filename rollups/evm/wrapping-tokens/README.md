@@ -7,7 +7,10 @@ If more tokens from L1 to be used in your rollup in the future, just append thos
 ## Installation
 
 ```bash
-pnpm install
+npm install
+
+# if ts-node is not installed globally
+npm install -g typescript 
 ```
 
 ## Configuration
