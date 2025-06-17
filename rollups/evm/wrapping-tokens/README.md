@@ -10,7 +10,7 @@ If more tokens from L1 to be used in your rollup in the future, just append thos
 npm install
 
 # if ts-node is not installed globally
-npm install -g typescript 
+npm install -g ts-node typescript
 ```
 
 ## Configuration
