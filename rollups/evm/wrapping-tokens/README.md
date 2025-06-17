@@ -7,7 +7,10 @@ If more tokens from L1 to be used in your rollup in the future, just append thos
 ## Installation
 
 ```bash
-pnpm install
+npm install
+
+# if ts-node is not installed globally
+npm install -g ts-node typescript
 ```
 
 ## Configuration
@@ -32,7 +35,7 @@ Copy `.env.testnet.example` or `.env.mainnet.example` to `.env` based on your ro
 To create wrapped denoms on L2 once you have `.env` ready:
 
 ```bash
-pnpm run create-wrapped-tokens
+ts-node src/create-wrapped-tokens
 ```
 
 This will:
@@ -47,7 +50,7 @@ This will:
 To fetch the addresses of wrapped denoms on L2:
 
 ```bash
-pnpm run fetch-wrapped-tokens
+ts-node src/fetch-wrapped-tokens
 ```
 
 This will:
@@ -61,6 +64,6 @@ Example output:
 ```shell
 --------------------------------
 L1Denom: uinit
-L2Denom: evm/0x1234...
+L2Denom: evm/1234...
 --------------------------------
 ```
