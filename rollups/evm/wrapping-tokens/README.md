@@ -23,6 +23,7 @@ Copy `.env.testnet.example` or `.env.mainnet.example` to `.env` based on your ro
 - `L1_GAS_PRICES`: Gas prices for L1 transactions
 - `MNEMONIC`: The mnemonic of the account to send this transaction
 - `COIN_TYPE`: coin type for account derivation path (BIP-44). Default as 60
+- `AMOUNT`: Amount of asset to wrap or unwrap. Default as 0. For unwrapping, this should be more than 10**12 due to the decimal of wrapped tokens.
 
 **Before proceeding, ensure your account meets the following requirements:**
 
