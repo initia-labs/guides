@@ -6,7 +6,6 @@ const assetList = process.env.ASSET_LIST?.split(",") || [];
 const mnemonic = process.env.MNEMONIC || "";
 const l1RestEndpoint = process.env.L1_REST_ENDPOINT || "";
 const l2RestEndpoint = process.env.L2_REST_ENDPOINT || "";
-const l1GasPrices = process.env.L1_GAS_PRICES || "";
 const coinType = parseInt(process.env.COIN_TYPE || "60");
 const amount = parseInt(process.env.AMOUNT || "0");
 
@@ -18,8 +17,6 @@ if (!assetList) {
   console.log("L1_REST_ENDPOINT is not set");
 } else if (!l2RestEndpoint) {
   console.log("L2_REST_ENDPOINT is not set");
-} else if (!l1GasPrices) {
-  console.log("L1_GAS_PRICES is not set");
 } else if (coinType !== 118 && coinType !== 60) {
   console.log("COIN_TYPE must be 118 or 60");
 } else if (amount < 0) {
@@ -32,12 +29,4 @@ for (const asset of assetList) {
   assets.push({ denom, bridgeType });
 }
 
-export {
-  assets,
-  mnemonic,
-  l1RestEndpoint,
-  l2RestEndpoint,
-  l1GasPrices,
-  coinType,
-  amount,
-};
+export { assets, mnemonic, l1RestEndpoint, l2RestEndpoint, coinType, amount };

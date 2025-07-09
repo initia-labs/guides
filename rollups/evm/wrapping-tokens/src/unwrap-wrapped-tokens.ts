@@ -1,10 +1,4 @@
-import {
-  amount,
-  assets,
-  coinType,
-  l2RestEndpoint,
-  mnemonic,
-} from "./env";
+import { amount, assets, coinType, l2RestEndpoint, mnemonic } from "./env";
 import { getChannelId } from "./utils";
 import {
   MsgCall,

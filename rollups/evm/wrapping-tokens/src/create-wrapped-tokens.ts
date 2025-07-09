@@ -2,7 +2,6 @@ import {
   amount,
   assets,
   coinType,
-  l1GasPrices,
   l1RestEndpoint,
   l2RestEndpoint,
   mnemonic,
@@ -134,7 +133,6 @@ async function createAccount(
 async function initiateTokenDepositTx(
   l1RestEndpoint: string,
   l2RestEndpoint: string,
-  l1GasPrices: string,
   mnemonic: string,
   coinType: number,
   assets: { denom: string; bridgeType: string }[],
@@ -150,10 +148,8 @@ async function initiateTokenDepositTx(
     coinType,
   });
 
-  const l1RestClient = new RESTClient(l1RestEndpoint, {
-    gasPrices: l1GasPrices,
-  });
-  const l2RestClient = new RESTClient(l2RestEndpoint, { gasPrices: {} });
+  const l1RestClient = new RESTClient(l1RestEndpoint);
+  const l2RestClient = new RESTClient(l2RestEndpoint);
   const bridgeInfo = await l2RestClient.opchild.bridgeInfo();
   const bridgeId = BigInt(bridgeInfo.bridge_id);
   const l1Wallet = new Wallet(l1RestClient, l1Key);
@@ -237,7 +233,6 @@ async function main() {
   const txHash = await initiateTokenDepositTx(
     l1RestEndpoint,
     l2RestEndpoint,
-    l1GasPrices,
     mnemonic,
     coinType,
     assets,
