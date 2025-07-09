@@ -72,7 +72,7 @@ async function generateIBCMemo(
   l2Wallet: Wallet,
   l2Denom: string,
   wrapperAddr: string
-): Promise<string> {  
+): Promise<string> {
   const input = wrapIntf.encodeFunctionData('toLocal(address,string,uint256,uint8)', [
     AccAddress.toHex(l2Wallet.key.accAddress),
     l2Denom,

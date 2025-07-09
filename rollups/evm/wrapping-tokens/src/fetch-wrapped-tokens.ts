@@ -26,7 +26,7 @@ async function getWrappedTokenAddress(
     AccAddress.fromHex(contractAddr),
     await l2RestClient.evm.erc20Wrapper(),
     input,
-    false
+    '0'
   );
   if ("error" in res && res.error !== "") {
     throw new Error(`Failed to get wrapped token address: ${res.error}`);

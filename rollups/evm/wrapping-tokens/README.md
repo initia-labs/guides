@@ -21,6 +21,7 @@ Copy `.env.testnet.example` or `.env.mainnet.example` to `.env` based on your ro
 - `L1_REST_ENDPOINT`: L1 chain REST endpoint
 - `L2_REST_ENDPOINT`: Your rollup chain REST endpoint
 - `L1_GAS_PRICES`: Gas prices for L1 transactions
+- `L2_GAS_PRICES`: Gas prices for L2 transactions (only required for unwrapping)
 - `MNEMONIC`: The mnemonic of the account to send this transaction
 - `COIN_TYPE`: coin type for account derivation path (BIP-44). Default as 60
 
@@ -35,7 +36,7 @@ Copy `.env.testnet.example` or `.env.mainnet.example` to `.env` based on your ro
 To create wrapped denoms on L2 once you have `.env` ready:
 
 ```bash
-ts-node src/create-wrapped-tokens
+npm run create-wrapped-tokens
 ```
 
 This will:
@@ -50,7 +51,7 @@ This will:
 To fetch the addresses of wrapped denoms on L2:
 
 ```bash
-ts-node src/fetch-wrapped-tokens
+npm run fetch-wrapped-tokens
 ```
 
 This will:
@@ -67,3 +68,22 @@ L1Denom: uinit
 L2Denom: evm/1234...
 --------------------------------
 ```
+
+## Unwrapping Wrapped Tokens
+
+To unwrap wrapped tokens and transfer them back to L1, you need to set ASSET_LIST in your `.env` file to the L2 denoms you want to unwrap. 
+
+```bash
+ASSET_LIST=evm/9989cFca23e97B2AEd8EA21d9CF244A03Cc89f02:ibc
+```
+
+Then run:
+
+```bash
+npm run unwrap-wrapped-tokens
+```
+
+This will:
+1. Initiate a withdrawal transaction for each wrapped token
+2. Send the wrapped tokens back to the L1 chain
+3. Output the transaction hash for tracking
