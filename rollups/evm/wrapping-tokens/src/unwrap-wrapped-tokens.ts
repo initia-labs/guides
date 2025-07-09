@@ -23,7 +23,7 @@ async function initiateTokenWithdrawTx(
   l2GasPrices: string,
   mnemonic: string,
   coinType: number,
-  assets: { denom: string; bridgeType: string }[]
+  assets: { denom: string; bridgeType: string }[],
 ): Promise<string> {
   const l2Key = new MnemonicKey({
     mnemonic: mnemonic,
@@ -39,7 +39,7 @@ async function initiateTokenWithdrawTx(
   const messages = [];
 
   const channelId = await getChannelId(l2RestClient);
-  
+
   // at this step, we don't have rest endpoint for l2, so use 0 sequence
   let sequence = await l2Wallet.sequence();
   for (const asset of assets) {
@@ -47,45 +47,47 @@ async function initiateTokenWithdrawTx(
     messages.push(
       new MsgCall(
         l2Wallet.key.accAddress,
-        asset.denom.replace('evm/', '0x'),
-        erc20Intf.encodeFunctionData('approve', [
+        asset.denom.replace("evm/", "0x"),
+        erc20Intf.encodeFunctionData("approve", [
           wrapperAddr,
           ethers.MaxInt256,
         ]),
-        '0',
-        []
-      )
-    )
+        "0",
+        [],
+      ),
+    );
 
     if (bridgeType === "ibc") {
       messages.push(
         new MsgCall(
           l2Wallet.key.accAddress,
           wrapperAddr,
-          wrapIntf.encodeFunctionData('toRemoteAndIBCTransfer(string,uint,string,string,uint)', [
-            asset.denom,
-            amount,
-            channelId,
-            AccAddress.toHex(l2Wallet.key.accAddress),
-            ((new Date().getTime() / 1000 + 1000) * 1_000_000_000).toFixed()
-          ]),
-          '0',
-          []
-        )
+          wrapIntf.encodeFunctionData(
+            "toRemoteAndIBCTransfer(string,uint,string,string,uint)",
+            [
+              asset.denom,
+              amount,
+              channelId,
+              AccAddress.toHex(l2Wallet.key.accAddress),
+              ((new Date().getTime() / 1000 + 1000) * 1_000_000_000).toFixed(),
+            ],
+          ),
+          "0",
+          [],
+        ),
       );
     } else if (bridgeType === "op") {
-    messages.push(
+      messages.push(
         new MsgCall(
           l2Wallet.key.accAddress,
           wrapperAddr,
-          wrapIntf.encodeFunctionData('toRemoteAndOPWithdraw(string,string,uint)', [
-            AccAddress.toHex(l2Wallet.key.accAddress),
-            asset.denom,
-            amount
-          ]),
-          '0',
-          []
-        )
+          wrapIntf.encodeFunctionData(
+            "toRemoteAndOPWithdraw(string,string,uint)",
+            [AccAddress.toHex(l2Wallet.key.accAddress), asset.denom, amount],
+          ),
+          "0",
+          [],
+        ),
       );
 
       sequence++;
@@ -109,7 +111,7 @@ async function main() {
     l2GasPrices,
     mnemonic,
     coinType,
-    assets
+    assets,
   );
 
   console.log(`Withdraw token tx hash: ${txHash}`);

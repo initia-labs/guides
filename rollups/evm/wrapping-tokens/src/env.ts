@@ -11,7 +11,6 @@ const l2GasPrices = process.env.L2_GAS_PRICES || "0GAS";
 const coinType = parseInt(process.env.COIN_TYPE || "60");
 const amount = parseInt(process.env.AMOUNT || "0");
 
-
 if (!assetList) {
   console.log("ASSET_LIST is not set");
 } else if (!mnemonic) {
@@ -30,7 +29,7 @@ if (!assetList) {
   console.log("AMOUNT must be greater than or equal to 0");
 }
 
-const assets: { denom: string, bridgeType: string }[] = [];
+const assets: { denom: string; bridgeType: string }[] = [];
 for (const asset of assetList) {
   const [denom, bridgeType] = asset.split(":");
   assets.push({ denom, bridgeType });

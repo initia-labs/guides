@@ -27,39 +27,42 @@ async function generateOPBridgeHookMessage(
   l2Wallet: Wallet,
   l2Denom: string,
   sequence: number,
-  wrapperAddr: string
+  wrapperAddr: string,
 ): Promise<string> {
-  const erc20WrapperContractAddr = await l2Wallet.rest.evm.erc20Wrapper()
-  const msgs = []
-  
+  const erc20WrapperContractAddr = await l2Wallet.rest.evm.erc20Wrapper();
+  const msgs = [];
+
   if (amount != 0) {
-    const tokenAddr = (await l2Wallet.rest.evm.contractAddrByDenom(l2Denom))
+    const tokenAddr = await l2Wallet.rest.evm.contractAddrByDenom(l2Denom);
     msgs.push(
       new MsgCall(
         l2Wallet.key.accAddress,
         tokenAddr,
-        erc20Intf.encodeFunctionData('approve', [erc20WrapperContractAddr, ethers.MaxInt256]),
-        '0',
-        []
-      )
-    )
+        erc20Intf.encodeFunctionData("approve", [
+          erc20WrapperContractAddr,
+          ethers.MaxInt256,
+        ]),
+        "0",
+        [],
+      ),
+    );
   }
-  
-  msgs.push( 
+
+  msgs.push(
     new MsgCall(
       l2Wallet.key.accAddress,
       wrapperAddr,
-      wrapIntf.encodeFunctionData('toLocal(address,string,uint256,uint8)', [
+      wrapIntf.encodeFunctionData("toLocal(address,string,uint256,uint8)", [
         AccAddress.toHex(l2Wallet.key.accAddress),
         l2Denom,
         amount,
-        6
+        6,
       ]),
-      '0',
-      []
-    )
-  )
-  
+      "0",
+      [],
+    ),
+  );
+
   const tx = await l2Wallet.createAndSignTx({
     msgs: msgs,
     gas: "1",
@@ -71,21 +74,19 @@ async function generateOPBridgeHookMessage(
 async function generateIBCMemo(
   l2Wallet: Wallet,
   l2Denom: string,
-  wrapperAddr: string
+  wrapperAddr: string,
 ): Promise<string> {
-  const input = wrapIntf.encodeFunctionData('toLocal(address,string,uint256,uint8)', [
-    AccAddress.toHex(l2Wallet.key.accAddress),
-    l2Denom,
-    amount,
-    6
-  ])
+  const input = wrapIntf.encodeFunctionData(
+    "toLocal(address,string,uint256,uint8)",
+    [AccAddress.toHex(l2Wallet.key.accAddress), l2Denom, amount, 6],
+  );
   return `{"evm":{"message":{"contract_addr":"${wrapperAddr}","input":"${input}"}}}`;
 }
 
 async function createAccount(
   l1Wallet: Wallet,
   l2Wallet: Wallet,
-  bridgeId: bigint
+  bridgeId: bigint,
 ) {
   const tx = await l1Wallet.createAndSignTx({
     msgs: [
@@ -93,7 +94,7 @@ async function createAccount(
         l1Wallet.key.accAddress,
         Number(bridgeId),
         l2Wallet.key.accAddress,
-        new Coin(`uinit`, 0)
+        new Coin(`uinit`, 0),
       ),
     ],
   });
@@ -103,7 +104,7 @@ async function createAccount(
   }
 
   console.info(
-    `Successfully submitted transaction ${res.txhash} to create L2 account for address ${l2Wallet.key.accAddress}`
+    `Successfully submitted transaction ${res.txhash} to create L2 account for address ${l2Wallet.key.accAddress}`,
   );
 
   console.info("Waiting for l2 account to be created...");
@@ -115,7 +116,7 @@ async function createAccount(
       console.info(
         `L2 account for ${
           l2Wallet.key.accAddress
-        } created with account number ${acc.getAccountNumber()}`
+        } created with account number ${acc.getAccountNumber()}`,
       );
 
       break;
@@ -136,7 +137,7 @@ async function initiateTokenDepositTx(
   l1GasPrices: string,
   mnemonic: string,
   coinType: number,
-  assets: { denom: string; bridgeType: string }[]
+  assets: { denom: string; bridgeType: string }[],
 ): Promise<string> {
   const l1Key = new MnemonicKey({
     mnemonic: mnemonic,
@@ -195,8 +196,8 @@ async function initiateTokenDepositTx(
           wrapperAddr,
           undefined,
           ((new Date().getTime() / 1000 + 1000) * 1_000_000_000).toFixed(),
-          await generateIBCMemo(l2Wallet, l2Denom, wrapperAddr)
-        )
+          await generateIBCMemo(l2Wallet, l2Denom, wrapperAddr),
+        ),
       );
     } else if (bridgeType === "op") {
       const l2Denom = L2Denom(bridgeId, l1Denom);
@@ -212,9 +213,9 @@ async function initiateTokenDepositTx(
             l2Wallet,
             l2Denom,
             sequence,
-            wrapperAddr
-          )
-        )
+            wrapperAddr,
+          ),
+        ),
       );
 
       sequence++;
@@ -239,7 +240,7 @@ async function main() {
     l1GasPrices,
     mnemonic,
     coinType,
-    assets
+    assets,
   );
 
   console.log(`Initiate token deposit tx hash: ${txHash}`);
