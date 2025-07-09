@@ -2,7 +2,6 @@ import {
   amount,
   assets,
   coinType,
-  l2GasPrices,
   l2RestEndpoint,
   mnemonic,
 } from "./env";
@@ -20,7 +19,6 @@ import { erc20Intf, wrapIntf } from "./interface";
 
 async function initiateTokenWithdrawTx(
   l2RestEndpoint: string,
-  l2GasPrices: string,
   mnemonic: string,
   coinType: number,
   assets: { denom: string; bridgeType: string }[],
@@ -31,9 +29,7 @@ async function initiateTokenWithdrawTx(
     coinType,
   });
 
-  const l2RestClient = new RESTClient(l2RestEndpoint, {
-    gasPrices: l2GasPrices,
-  });
+  const l2RestClient = new RESTClient(l2RestEndpoint);
   const l2Wallet = new Wallet(l2RestClient, l2Key);
   const wrapperAddr = await l2Wallet.rest.evm.erc20Wrapper();
   const messages = [];
@@ -108,7 +104,6 @@ async function initiateTokenWithdrawTx(
 async function main() {
   const txHash = await initiateTokenWithdrawTx(
     l2RestEndpoint,
-    l2GasPrices,
     mnemonic,
     coinType,
     assets,
