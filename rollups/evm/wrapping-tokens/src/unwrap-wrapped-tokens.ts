@@ -29,8 +29,7 @@ async function initiateTokenWithdrawTx(
   const messages = [];
 
   const channelId = await getChannelId(l2RestClient);
-
-  // at this step, we don't have rest endpoint for l2, so use 0 sequence
+  
   let sequence = await l2Wallet.sequence();
   for (const asset of assets) {
     const bridgeType = asset.bridgeType;
