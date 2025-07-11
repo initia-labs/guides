@@ -2,7 +2,6 @@ import {
   amount,
   assets,
   coinType,
-  l1GasPrices,
   l1RestEndpoint,
   l2RestEndpoint,
   mnemonic,
@@ -27,39 +26,42 @@ async function generateOPBridgeHookMessage(
   l2Wallet: Wallet,
   l2Denom: string,
   sequence: number,
-  wrapperAddr: string
+  wrapperAddr: string,
 ): Promise<string> {
-  const erc20WrapperContractAddr = await l2Wallet.rest.evm.erc20Wrapper()
-  const msgs = []
-  
+  const erc20WrapperContractAddr = await l2Wallet.rest.evm.erc20Wrapper();
+  const msgs = [];
+
   if (amount != 0) {
-    const tokenAddr = (await l2Wallet.rest.evm.contractAddrByDenom(l2Denom))
+    const tokenAddr = await l2Wallet.rest.evm.contractAddrByDenom(l2Denom);
     msgs.push(
       new MsgCall(
         l2Wallet.key.accAddress,
         tokenAddr,
-        erc20Intf.encodeFunctionData('approve', [erc20WrapperContractAddr, ethers.MaxInt256]),
-        '0',
-        []
-      )
-    )
+        erc20Intf.encodeFunctionData("approve", [
+          erc20WrapperContractAddr,
+          ethers.MaxInt256,
+        ]),
+        "0",
+        [],
+      ),
+    );
   }
-  
-  msgs.push( 
+
+  msgs.push(
     new MsgCall(
       l2Wallet.key.accAddress,
       wrapperAddr,
-      wrapIntf.encodeFunctionData('toLocal(address,string,uint256,uint8)', [
+      wrapIntf.encodeFunctionData("toLocal(address,string,uint256,uint8)", [
         AccAddress.toHex(l2Wallet.key.accAddress),
         l2Denom,
         amount,
-        6
+        6,
       ]),
-      '0',
-      []
-    )
-  )
-  
+      "0",
+      [],
+    ),
+  );
+
   const tx = await l2Wallet.createAndSignTx({
     msgs: msgs,
     gas: "1",
@@ -71,21 +73,19 @@ async function generateOPBridgeHookMessage(
 async function generateIBCMemo(
   l2Wallet: Wallet,
   l2Denom: string,
-  wrapperAddr: string
-): Promise<string> {  
-  const input = wrapIntf.encodeFunctionData('toLocal(address,string,uint256,uint8)', [
-    AccAddress.toHex(l2Wallet.key.accAddress),
-    l2Denom,
-    amount,
-    6
-  ])
+  wrapperAddr: string,
+): Promise<string> {
+  const input = wrapIntf.encodeFunctionData(
+    "toLocal(address,string,uint256,uint8)",
+    [AccAddress.toHex(l2Wallet.key.accAddress), l2Denom, amount, 6],
+  );
   return `{"evm":{"message":{"contract_addr":"${wrapperAddr}","input":"${input}"}}}`;
 }
 
 async function createAccount(
   l1Wallet: Wallet,
   l2Wallet: Wallet,
-  bridgeId: bigint
+  bridgeId: bigint,
 ) {
   const tx = await l1Wallet.createAndSignTx({
     msgs: [
@@ -93,7 +93,7 @@ async function createAccount(
         l1Wallet.key.accAddress,
         Number(bridgeId),
         l2Wallet.key.accAddress,
-        new Coin(`uinit`, 0)
+        new Coin(`uinit`, 0),
       ),
     ],
   });
@@ -103,7 +103,7 @@ async function createAccount(
   }
 
   console.info(
-    `Successfully submitted transaction ${res.txhash} to create L2 account for address ${l2Wallet.key.accAddress}`
+    `Successfully submitted transaction ${res.txhash} to create L2 account for address ${l2Wallet.key.accAddress}`,
   );
 
   console.info("Waiting for l2 account to be created...");
@@ -115,7 +115,7 @@ async function createAccount(
       console.info(
         `L2 account for ${
           l2Wallet.key.accAddress
-        } created with account number ${acc.getAccountNumber()}`
+        } created with account number ${acc.getAccountNumber()}`,
       );
 
       break;
@@ -133,10 +133,9 @@ async function createAccount(
 async function initiateTokenDepositTx(
   l1RestEndpoint: string,
   l2RestEndpoint: string,
-  l1GasPrices: string,
   mnemonic: string,
   coinType: number,
-  assets: { denom: string; bridgeType: string }[]
+  assets: { denom: string; bridgeType: string }[],
 ): Promise<string> {
   const l1Key = new MnemonicKey({
     mnemonic: mnemonic,
@@ -149,10 +148,8 @@ async function initiateTokenDepositTx(
     coinType,
   });
 
-  const l1RestClient = new RESTClient(l1RestEndpoint, {
-    gasPrices: l1GasPrices,
-  });
-  const l2RestClient = new RESTClient(l2RestEndpoint, { gasPrices: {} });
+  const l1RestClient = new RESTClient(l1RestEndpoint);
+  const l2RestClient = new RESTClient(l2RestEndpoint);
   const bridgeInfo = await l2RestClient.opchild.bridgeInfo();
   const bridgeId = BigInt(bridgeInfo.bridge_id);
   const l1Wallet = new Wallet(l1RestClient, l1Key);
@@ -172,7 +169,7 @@ async function initiateTokenDepositTx(
   }
 
   const channelId = await getChannelId(l2RestClient);
-  // at this step, we don't have rest endpoint for l2, so use 0 sequence
+
   let sequence = await l2Wallet.sequence();
   for (const asset of assets) {
     const l1Denom = asset.denom;
@@ -195,8 +192,8 @@ async function initiateTokenDepositTx(
           wrapperAddr,
           undefined,
           ((new Date().getTime() / 1000 + 1000) * 1_000_000_000).toFixed(),
-          await generateIBCMemo(l2Wallet, l2Denom, wrapperAddr)
-        )
+          await generateIBCMemo(l2Wallet, l2Denom, wrapperAddr),
+        ),
       );
     } else if (bridgeType === "op") {
       const l2Denom = L2Denom(bridgeId, l1Denom);
@@ -212,9 +209,9 @@ async function initiateTokenDepositTx(
             l2Wallet,
             l2Denom,
             sequence,
-            wrapperAddr
-          )
-        )
+            wrapperAddr,
+          ),
+        ),
       );
 
       sequence++;
@@ -236,10 +233,9 @@ async function main() {
   const txHash = await initiateTokenDepositTx(
     l1RestEndpoint,
     l2RestEndpoint,
-    l1GasPrices,
     mnemonic,
     coinType,
-    assets
+    assets,
   );
 
   console.log(`Initiate token deposit tx hash: ${txHash}`);

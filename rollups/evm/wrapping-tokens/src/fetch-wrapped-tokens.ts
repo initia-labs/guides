@@ -6,7 +6,7 @@ import { AbiCoder, getAddress } from "ethers";
 
 async function contractAddress(
   restClient: RESTClient,
-  l2Denom: string
+  l2Denom: string,
 ): Promise<string> {
   const contractAddr = await restClient.evm.contractAddrByDenom(l2Denom);
   return contractAddr;
@@ -14,7 +14,7 @@ async function contractAddress(
 
 async function getWrappedTokenAddress(
   l2RestClient: RESTClient,
-  l2Denom: string
+  l2Denom: string,
 ): Promise<string> {
   const contractAddr = await contractAddress(l2RestClient, l2Denom);
 
@@ -26,7 +26,7 @@ async function getWrappedTokenAddress(
     AccAddress.fromHex(contractAddr),
     await l2RestClient.evm.erc20Wrapper(),
     input,
-    false
+    "0",
   );
   if ("error" in res && res.error !== "") {
     throw new Error(`Failed to get wrapped token address: ${res.error}`);
@@ -48,7 +48,7 @@ async function main() {
     const l1Denom = asset.denom;
     const bridgeType = asset.bridgeType;
 
-    let l2Denom = ''
+    let l2Denom = "";
     if (bridgeType === "ibc") {
       l2Denom = await IBCDenom(l1RestClient, l1Denom, channelId);
     } else if (bridgeType === "op") {

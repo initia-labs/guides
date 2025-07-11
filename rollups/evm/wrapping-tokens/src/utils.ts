@@ -17,7 +17,7 @@ function L2Denom(bridgeId: bigint, l1Denom: string) {
 async function IBCDenom(
   l1RestClient: RESTClient,
   l1Denom: string,
-  channelId: string
+  channelId: string,
 ) {
   let baseDenom = l1Denom;
   let denomPath = `transfer/${channelId}`;
@@ -40,7 +40,9 @@ async function IBCDenom(
 
 async function getChannelId(l2RestClient: RESTClient): Promise<string> {
   const [channels, _] = await l2RestClient.ibc.channels();
-  const channel = channels.find((c) => c.port_id === "transfer" && c.state.toString() === "STATE_OPEN");
+  const channel = channels.find(
+    (c) => c.port_id === "transfer" && c.state.toString() === "STATE_OPEN",
+  );
   if (!channel) {
     throw new Error("Channel not found");
   }
