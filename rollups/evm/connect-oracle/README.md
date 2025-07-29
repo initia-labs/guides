@@ -1,66 +1,223 @@
-## Foundry
+##  Connect Oracle
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+### Foundry
 
-Foundry consists of:
+For this tutorial, we will be using [Foundry](https://github.com/foundry-rs/foundry) toolkit to develop, compile, and deploy our contracts. If you do not have Foundry installed, follow the [Foundry installation instructions](https://getfoundry.sh/).
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
 
-## Documentation
+## Setup
 
-https://book.getfoundry.sh/
+Clone the repository and  to the `rollups/evm/connect-oracle` directory.
 
-## Usage
-
-### Build
-
-```shell
-$ forge build
+```sh
+git clone https://github.com/initia-labs/guides.git
+cd guides/rollups/evm/connect-oracle
 ```
 
-### Test
+## Implementation
 
-```shell
-$ forge test
+We declare the `IConnectOracle` interface, which will be used to interact with the ConnectOracle contract.
+
+```solidity src/Oracle.sol
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+interface IConnectOracle {
+    struct Price {
+        uint256 price;
+        uint256 timestamp;
+        uint64 height;
+        uint64 nonce;
+        uint64 decimal;
+        uint64 id;
+    }
+
+    function get_price(string memory pair_id) external view returns (Price memory);
+    function get_prices(string[] memory pair_ids) external view returns (Price[] memory);
+}
+
+contract Oracle {
+    IConnectOracle public connect;
 ```
 
-### Format
+We then need to define the constructor for our contract. This will be used to initialize the contract with the ConnectOracle contract address.
 
-```shell
-$ forge fmt
+> The ConnectOracle contract is on MiniEVM precompiles. You can get its address by querying `${REST_URL}/minievm/evm/v1/connect_oracle` where `${REST_URL}` refers to the REST endpoint URL of the rollup.
+> ```sh
+> curl https://rest.minievm-2.initia.xyz/minievm/evm/v1/connect_oracle
+> ```
+> The output will look like this:
+> ```json
+> {
+>   "address": "0x031ECb63480983FD216D17BB6e1d393f3816b72F"
+> }
+> ```
+
+```solidity src/Oracle.sol
+    constructor(address oracleAddress) {
+        connect = IConnectOracle(oracleAddress);
+    }
 ```
 
-### Gas Snapshots
+Once the constructor is implement, we move on to defining the different functions that our contract will have
 
-```shell
-$ forge snapshot
+- `oracle_get_price`: This function will return the price of a single asset pair
+- `oracle_get_prices`: This function will return the price of multiple asset pairs
+
+```solidity src/Oracle.sol
+    function oracle_get_price() external view returns (uint256 price, uint256 timestamp) {
+        IConnectOracle.Price memory p = connect.get_price("BTC/USD");
+        return (p.price, p.timestamp);
+    }
+
+    function oracle_get_prices() external view returns (uint256[] memory prices) {
+        string[] memory pair_ids = new string[](2);
+        pair_ids[0] = "BTC/USD";
+        pair_ids[1] = "ETH/USD";
+
+        IConnectOracle.Price[] memory result = connect.get_prices(pair_ids);
+
+        prices = new uint256[](result.length);
+        for (uint256 i = 0; i < result.length; i++) {
+            prices[i] = result[i].price;
+        }
+    }
 ```
 
-### Anvil
+Our complete contract will then look like this:
 
-```shell
-$ anvil
+```solidity src/Oracle.sol
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+interface IConnectOracle {
+    struct Price {
+        uint256 price;
+        uint256 timestamp;
+        uint64 height;
+        uint64 nonce;
+        uint64 decimal;
+        uint64 id;
+    }
+
+    function get_price(string memory pair_id) external view returns (Price memory);
+    function get_prices(string[] memory pair_ids) external view returns (Price[] memory);
+}
+
+contract Oracle {
+    IConnectOracle public connect;
+
+    constructor(address oracleAddress) {
+        connect = IConnectOracle(oracleAddress);
+    }
+
+    function oracle_get_price() external view returns (uint256 price, uint256 timestamp) {
+        IConnectOracle.Price memory p = connect.get_price("BTC/USD");
+        return (p.price, p.timestamp);
+    }
+
+    function oracle_get_prices() external view returns (uint256[] memory prices) {
+        string[] memory pair_ids = new string[](2);
+        pair_ids[0] = "BTC/USD";
+        pair_ids[1] = "ETH/USD";
+
+        IConnectOracle.Price[] memory result = connect.get_prices(pair_ids);
+
+        prices = new uint256[](result.length);
+        for (uint256 i = 0; i < result.length; i++) {
+            prices[i] = result[i].price;
+        }
+
+        return prices;
+    }
+}
 ```
 
-### Deploy
+Now running `forge compile` should work without any errors.
 
-```shell
-$ forge script script/Oracle.s.sol:OracleScript --rpc-url <your_rpc_url> --private-key <your_private_key>
+```sh
+forge compile;
+
+# [Expected Output]:
+# [⠢] Compiling...
+# [⠰] Compiling 27 files with 0.8.21
+# [⠃] Solc 0.8.21 finished in 6.25s
+# Compiler run successful!
 ```
 
-### Cast
+## Deploying the Contract
 
-```shell
-$ cast <subcommand>
+Now that Our contract is compiled and ready, we can deploy it to the MiniEVM. To accomplish this, we will use Foundry's `forge script` command.  First, we need to create a script file that will handle the deployment. Create a new file named `Oracle.s.sol` in the `script` directory.
+
+```solidity script/Oracle.s.sol
+    // SPDX-License-Identifier: UNLICENSED
+    pragma solidity ^0.8.24;
+
+    import {Script, console} from "forge-std/Script.sol";
+    import {Oracle} from "../src/Oracle.sol";
+
+    contract OracleScript is Script {
+        Oracle public oracle;
+
+        function setUp() public {}
+
+        function run() public {
+            address oracleAddress = 0x031ECb63480983FD216D17BB6e1d393f3816b72F; 
+
+            vm.startBroadcast();
+
+            oracle = new Oracle(oracleAddress);
+
+            vm.stopBroadcast();
+        }
+    }
 ```
 
-### Help
+Set your environment variables and run the deployment. Be sure to replace `PRIVATE_KEY` with the deployer's private key, and `JSON_RPC_URL` with your rollup's JSON-RPC endpoint.
 
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
+```sh
+export PRIVATE_KEY=0x...
+export JSON_RPC_URL=https://json-rpc.minievm-2.initia.xyz
+
+forge script script/Oracle.s.sol:OracleScript \
+  --rpc-url $JSON_RPC_URL \
+  --private-key $PRIVATE_KEY \
+  --broadcast \
+  --via-ir \
+  --with-gas-price 0 \
+  --skip-simulation
 ```
+
+Output should look like this:
+
+```sh
+[⠊] Compiling...
+[⠊] Compiling 18 files with Solc 0.8.28
+[⠒] Solc 0.8.28 finished in 918.49ms
+Compiler run successful!
+Script ran successfully.
+
+SKIPPING ON CHAIN SIMULATION.
+
+##### 4303131403034904
+✅  [Success] Hash: 0x8d9c488d7599fd867e45eee3b3a6ede24fec8f6459433051c341ef1937026bcf
+Contract Address: 0x505500221090Cd06400125B4f41A266B89Ffd62e
+Block: 10493369
+Gas Used: 290728
+
+✅ Sequence #1 on 4303131403034904 | Total Paid: 0. ETH (290728 gas * avg 0 gwei)
+```
+
+To query the `oracle_get_price()` function, use Foundry’s cast call command.
+
+```sh
+cast call 0x505500221090Cd06400125B4f41A266B89Ffd62e "oracle_get_price()" --rpc-url $JSON_RPC_URL
+```
+
+Output should look like this:
+
+```sh
+0x00000000000000000000000000000000000000000000000000000002c3cd0d430000000000000000000000000000000000000000000000001856610b4b695788
+```
+
+The output is a hexadecimal representation of the price and timestamp.
