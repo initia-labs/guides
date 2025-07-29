@@ -6,7 +6,7 @@ For this tutorial, we will be using [Foundry](https://github.com/foundry-rs/foun
 
 ## Setup
 
-Clone the repository and  to the `rollups/evm/connect-oracle` directory.
+Clone the repository and navigate to the `rollups/evm/connect-oracle` directory:
 
 ```sh
 git clone https://github.com/initia-labs/guides.git
