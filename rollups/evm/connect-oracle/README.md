@@ -1,5 +1,7 @@
 ##  Connect Oracle
 
+This guide will walk you through deploying a simple oracle contract on an EVM-compatible rollup using Foundry.
+
 ### Foundry
 
 For this tutorial, we will be using [Foundry](https://github.com/foundry-rs/foundry) toolkit to develop, compile, and deploy our contracts. If you do not have Foundry installed, follow the [Foundry installation instructions](https://getfoundry.sh/).
